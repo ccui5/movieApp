@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Common {
-  final String common;
-  final double points;
+  final String uid;
+  final String points;
 
-  const Common({@required this.common, @required this.points});
+  const Common({@required this.uid, @required this.points});
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:movieApp/providers/actor_provider.dart';
 import 'package:movieApp/providers/company_provider.dart';
+import 'package:movieApp/providers/countryInfo_provider.dart';
 import 'package:movieApp/providers/movie_provider.dart';
 import 'package:movieApp/providers/tag_provider.dart';
+import 'package:movieApp/screens/CountryInfo.dart';
 import 'package:movieApp/screens/actorScreen.dart';
 import 'package:movieApp/screens/companyScreen.dart';
 import 'package:movieApp/screens/initScreen.dart';
@@ -24,6 +26,7 @@ class _MyAppState extends State<MyApp> {
   ActorProvider actorProvider;
   TagProvider tagProvider;
   CompanyProvider companyProvider;
+  CountryInfoProvider countryInfoProvider;
   @override
   void initState() {
     initProvider = new InitProvider();
@@ -31,6 +34,7 @@ class _MyAppState extends State<MyApp> {
     actorProvider = new ActorProvider();
     tagProvider = new TagProvider();
     companyProvider = new CompanyProvider();
+    countryInfoProvider = new CountryInfoProvider();
     super.initState();
   }
 
@@ -52,6 +56,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider.value(
           value: companyProvider,
+        ),
+        ChangeNotifierProvider.value(
+          value: countryInfoProvider,
         ),
       ],
       child: MaterialApp(
@@ -87,6 +94,7 @@ class _MyAppState extends State<MyApp> {
           MyTagScreen.routeName: (ctx) =>
               MyTagScreen(ModalRoute.of(ctx).settings.arguments),
           CompanyScreen.routeName: (ctx) => CompanyScreen(),
+          CountryInfoScreen.routeName: (ctx) => CountryInfoScreen(),
         },
         onGenerateRoute: (settings) {
           print(settings.arguments);

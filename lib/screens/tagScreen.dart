@@ -18,7 +18,7 @@ class MyTagScreenState extends State<MyTagScreen> {
 
   initState() {
     tagProvider = Provider.of<TagProvider>(context, listen: false);
-    tagProvider.language = widget.language;
+    tagProvider.setLanguage(widget.language);
     super.initState();
   }
 
@@ -85,7 +85,7 @@ class MyTagScreenState extends State<MyTagScreen> {
                 ),
               ),
               Container(
-                height: 500,
+                height: 600,
                 child: GridView.count(
                   children: u.covers
                       .map(
@@ -96,7 +96,7 @@ class MyTagScreenState extends State<MyTagScreen> {
                         ),
                       )
                       .toList(),
-                  crossAxisCount: 3,
+                  crossAxisCount: 2,
                 ),
               ),
             ],

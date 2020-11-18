@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ShowTime {
-  final DateTime start;
-  final DateTime end;
+  final String start;
+  final String end;
 
   const ShowTime({
     @required this.start,

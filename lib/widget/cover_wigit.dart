@@ -18,7 +18,7 @@ class CoverItem extends StatelessWidget {
     return Container(
       child: Column(children: <Widget>[
         Container(
-          height: 90,
+          height: 120,
           width: 100,
           child: FlatButton(
             onPressed: () {
@@ -30,7 +30,10 @@ class CoverItem extends StatelessWidget {
             ),
           ),
         ),
-        Text(name),
+        Container(
+          height: 45,
+          child: Text(name),
+        ),
         Text(
           point.toString(),
         ),

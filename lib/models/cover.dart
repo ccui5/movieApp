@@ -4,9 +4,9 @@ import 'common.dart';
 class Cover {
   final String image_url;
   final String movie_name;
-  final double points;
+  final String points;
   final Common common;
-  final int year;
+  final DateTime year;
 
   const Cover({
     @required this.image_url,

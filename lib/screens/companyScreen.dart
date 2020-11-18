@@ -87,16 +87,6 @@ class CompanyScreenState extends State<CompanyScreen> {
               ],
             ),
           ),
-          Consumer<CompanyProvider>(
-            builder: (ctx, u, child) => Container(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: rows(u.tags, u.companyTagsPersentage),
-                ),
-              ),
-            ),
-          )
         ],
       ),
     );

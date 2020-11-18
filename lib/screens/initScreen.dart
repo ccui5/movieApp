@@ -21,8 +21,16 @@ class InitScreenState extends State<InitScreen> {
   @override
   void initState() {
     initProvider = Provider.of<InitProvider>(context, listen: false);
-    initProvider.getMovie();
+    getData();
     super.initState();
+  }
+
+  Future<void> getData() async {
+    await initProvider.getCurrentShow();
+    await initProvider.getTopRateMovies();
+    await initProvider.getTopRevenueMovies();
+    await initProvider.getTopRevenueCompanies();
+    await initProvider.getTopNumCompanies();
   }
 
   void goToCompanyScreen() {
@@ -42,22 +50,10 @@ class InitScreenState extends State<InitScreen> {
     List<Widget> retVal = new List<Widget>();
     for (int i = 0; i < companies.length; i++) {
       retVal.add(Container(
+        margin: EdgeInsets.only(top: 5, bottom: 5),
         padding: EdgeInsets.only(left: 2, right: 2),
         child: Text(
             companies[i].name + "  rate: " + companies[i].earning.toString()),
-      ));
-    }
-
-    return retVal;
-  }
-
-  List<Widget> stringWidet(List<Director> directors) {
-    List<Widget> retVal = new List<Widget>();
-    for (int i = 0; i < directors.length; i++) {
-      retVal.add(Container(
-        padding: EdgeInsets.only(left: 2, right: 2),
-        child: Text(
-            directors[i].name + "  rate: " + directors[i].points.toString()),
       ));
     }
 
@@ -69,11 +65,12 @@ class InitScreenState extends State<InitScreen> {
     for (int i = 0; i < covers.length; i++) {
       returnVal.add(
         Container(
+          margin: EdgeInsets.only(top: 5, bottom: 5),
           padding: EdgeInsets.only(left: 2, right: 2),
           child: Row(
             children: <Widget>[
               Container(
-                height: 90,
+                height: 100,
                 width: 100,
                 child: FlatButton(
                   onPressed: () => chooseMovie(covers[i].movie_name),
@@ -82,9 +79,17 @@ class InitScreenState extends State<InitScreen> {
                   ),
                 ),
               ),
-              Text(covers[i].movie_name +
-                  "\t\trate: " +
-                  covers[i].points.toString()),
+              Column(
+                children: <Widget>[
+                  Container(
+                    width: 300,
+                    child: Text(covers[i].movie_name),
+                  ),
+                  Container(
+                    child: Text(covers[i].points),
+                  ),
+                ],
+              )
             ],
           ),
         ),
@@ -93,22 +98,28 @@ class InitScreenState extends State<InitScreen> {
     return returnVal;
   }
 
-  List<Widget> coverList(int num, String name, String url) {
+  List<Widget> coverList(List<Cover> covers) {
     List<Widget> returnVal = new List<Widget>();
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < covers.length; i++) {
       returnVal.add(
         Container(
-          height: 150,
           width: 150,
           child: Column(
             children: <Widget>[
-              FlatButton(
-                onPressed: () => chooseMovie(name),
-                child: Image(
-                  image: NetworkImage(url),
+              Container(
+                height: 150,
+                child: FlatButton(
+                  onPressed: () => chooseMovie(covers[i].movie_name),
+                  child: Image(
+                    image: NetworkImage(covers[i].image_url),
+                  ),
                 ),
               ),
-              Text(name)
+              Container(height: 50, child: Text(covers[i].movie_name)),
+              Container(
+                height: 25,
+                child: Text(covers[i].year.toString()),
+              )
             ],
           ),
         ),
@@ -179,22 +190,21 @@ class InitScreenState extends State<InitScreen> {
               margin: EdgeInsets.only(top: 3, bottom: 3),
               child: Column(
                 children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("current showing"),
-                    ],
+                  Container(
+                    child: Text(
+                      "current showing",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    color: Colors.green[200],
                   ),
                   Container(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Consumer<InitProvider>(
                         builder: (context, u, child) => Row(
-                          children: coverList(
-                            u.currentShowing.length,
-                            "name",
-                            u.currentShowing[0].image_url,
-                          ),
+                          children: coverList(u.currentShowing),
                         ),
                       ),
                     ),
@@ -216,8 +226,11 @@ class InitScreenState extends State<InitScreen> {
                                 borderRadius: BorderRadius.circular(18.0),
                                 side: BorderSide(color: Colors.white)),
                             color: Colors.white,
-                            child: Text('Average rate of tags'),
-                            onPressed: () => () {},
+                            child: Text('Country infomations'),
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, '/CountryInfoScreen');
+                            },
                           ),
                           RaisedButton(
                             shape: RoundedRectangleBorder(
@@ -232,29 +245,30 @@ class InitScreenState extends State<InitScreen> {
                     ),
                   ),
                   Container(
-                    child: Text("Top 20 movies"),
+                    margin: EdgeInsets.only(top: 5, bottom: 5),
+                    padding: EdgeInsets.only(left: 2, right: 2),
+                    child: Text(
+                      "Top 20 movies by average rate",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    color: Colors.blue[100],
                   ),
                   Container(
                     child: Consumer<InitProvider>(
                       builder: (context, u, child) => Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: mostCommonList(u.currentShowing),
+                        children: mostCommonList(u.topRate),
                       ),
                     ),
                   ),
                   Container(
-                    child: Text("Top 20 directors"),
-                  ),
-                  Container(
-                    child: Consumer<InitProvider>(
-                      builder: (context, u, child) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: stringWidet(u.directors),
-                      ),
+                    margin: EdgeInsets.only(top: 5, bottom: 5),
+                    padding: EdgeInsets.only(left: 2, right: 2),
+                    child: Text(
+                      "Top 20 revenue movies",
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  Container(
-                    child: Text("Top 20 revenue movies"),
+                    color: Colors.yellow[100],
                   ),
                   Container(
                     child: Consumer<InitProvider>(
@@ -265,7 +279,29 @@ class InitScreenState extends State<InitScreen> {
                     ),
                   ),
                   Container(
-                    child: Text("Top 20 revenue compaines"),
+                    margin: EdgeInsets.only(top: 5, bottom: 5),
+                    padding: EdgeInsets.only(left: 2, right: 2),
+                    child: Text(
+                      "Top 20 high-producig Companies ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    color: Colors.grey,
+                  ),
+                  Container(
+                    child: Consumer<InitProvider>(
+                      builder: (context, u, child) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: companiesWidet(u.companiesByNum),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 10, bottom: 10),
+                    child: Text(
+                      "Top 20 revenue compaines",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    color: Colors.green[100],
                   ),
                   Container(
                     child: Consumer<InitProvider>(

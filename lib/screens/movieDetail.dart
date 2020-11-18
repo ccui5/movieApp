@@ -19,13 +19,14 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
   @override
   void initState() {
     movieProvider = Provider.of<MovieProvider>(context, listen: false);
+
     movieProvider.getMovie(widget.movieName);
     super.initState();
   }
 
   void goToDirctor(String s) {
     print("go to actor" + s);
-    Navigator.pushNamed(context, '/ActorScreen', arguments: s);
+    //Navigator.pushNamed(context, '/ActorScreen', arguments: s);
   }
 
   List<Widget> showActor(List<String> actors) {
@@ -60,11 +61,11 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
             children: <Widget>[
               Container(
                 width: 100,
-                child: Text(commons[i].points.toString()),
+                child: Text(commons[i].points),
               ),
               Container(
                 width: 250,
-                child: Text(commons[i].common.toString()),
+                child: Text(commons[i].uid),
               ),
             ],
           ),
@@ -124,8 +125,8 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
             ),
             Container(
               child: Consumer<MovieProvider>(
-                builder: (context, u, _) => Column(
-                  children: showCommons(u.m.commons),
+                builder: (context, u, _) => Container(
+                  child: Text(u.m.sketch),
                 ),
               ),
             ),

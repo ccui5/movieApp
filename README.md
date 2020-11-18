@@ -24,3 +24,127 @@ https://flutter.dev/docs/get-started/install/windows
 可以运行之后打开 lib 文件夹 里面有一个 providers, 里面是前端要用的数据, 把数据存进这里前端会自动显示
 
 data 文件夹里面是 mongodb class 未完成
+
+#Get the small set of movies by language which is English.
+db.movies_metadata.aggregate([
+{
+$match: {"original_language":"en"} 
+	},
+	{ $lookup:
+{
+from: "links_small",
+localField: "id",
+foreignField: "tmdbId",
+as: "small_links"
+}
+},
+{
+$match: { "small_links": { $ne: [] } }
+}
+])
+
+#Get the small set of movies by language which is English( #return is limited to 50).
+db.movies_metadata.aggregate([
+{
+$match: {"original_language":"en"} 
+	},
+	{ $lookup:
+{
+from: "links_small",
+localField: "id",
+foreignField: "tmdbId",
+as: "small_links"
+}
+},
+{
+$match: { "small_links": { $ne: [] } }
+},
+{
+\$limit: 50
+}
+])
+
+#Get the top20 movies by vote_average.
+db.movies_metadata.aggregate([
+{
+$sort: { "vote_average" : -1 }
+	},
+	{ 	$lookup:
+{
+from: "links_small",
+localField: "id",
+foreignField: "tmdbId",
+as: "small_links"
+}
+},
+{
+$match: { "small_links": { $ne: [] } }
+},
+{
+$limit: 20
+	},
+	{
+		$project: { \_id: 0, original_title : 1 , vote_average : 1 , poster_path : 1 }
+}
+])
+
+#Get the top20 movies by revenue.
+db.movies_metadata.aggregate([
+{
+$sort: { "revenue" : -1 }
+	},
+	{ 	$lookup:
+{
+from: "links_small",
+localField: "id",
+foreignField: "tmdbId",
+as: "small_links"
+}
+},
+{
+$match: { "small_links": { $ne: [] } }
+},
+{
+$limit: 20
+	},
+	{
+		$project: { \_id: 0, original_title : 1 , revenue : 1 , poster_path : 1 }
+}
+])
+
+db.movies_metadata.aggregate([
+{"$unwind": '$production_companies'},
+{
+"$group": {
+"name": "$production_companies.name",
+"num_movies": {"$sum": 1},
+"revenue_total": {
+"$sum": {"$toLong": "$revenue"}
+}
+}
+},
+{
+"$sort": {"revenue_total": -1}
+},
+{"$limit": 20}
+])
+
+    db.movies_metadata.aggregate([
+    {
+    	$unwind: '$production_companies'
+    },{
+    	$group:
+    	{
+    		_id : {name:"$production_companies.name"},
+    		Num_movies: { $sum: 1 },
+    		revenue_total : { $sum: {$toLong : "$revenue"} }
+    	}
+    },
+    {
+    	$sort: { revenue_total : -1 }
+    },
+    {
+    	$limit: 20
+    }
+
+])

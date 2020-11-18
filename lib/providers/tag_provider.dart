@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:movieApp/data/mongo.dart';
+import 'package:movieApp/http/imdbServer.dart';
 import 'package:movieApp/models/actor.dart';
 import 'package:movieApp/models/common.dart';
 import 'package:movieApp/models/cover.dart';
@@ -11,6 +13,7 @@ class TagProvider with ChangeNotifier {
   List<Tuple2<int, int>> years;
   Tuple2<int, int> choosedYear;
   String language;
+  Map<String, String> languageMap;
   TagProvider() {
     tags = [
       "Action",
@@ -25,108 +28,75 @@ class TagProvider with ChangeNotifier {
       "Animation",
       "Romance"
     ];
+    languageMap = {
+      "English": "en",
+      "Chinese": "cn",
+      "French": "fr",
+      "Russian": "ru",
+      "Japanese": "ja"
+    };
+
     years = new List<Tuple2<int, int>>();
 
-    for (int i = 1950; i < 2020; i += 10) {
+    for (int i = 1980; i < 2020; i += 10) {
       years.add(Tuple2(i, i + 9));
     }
+    choosedYear = years[3];
 
     covers = new List<Cover>();
     choosedTag = new List<String>();
-
-    covers = [
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2015,
-      ),
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2019,
-      ),
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2019,
-      ),
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2019,
-      ),
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2019,
-      ),
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2019,
-      ),
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2019,
-      ),
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2019,
-      ),
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2019,
-      ),
-      Cover(
-        image_url:
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        movie_name: 'name',
-        points: 6.5,
-        common: Common(common: "common 12345", points: 5.3),
-        year: 2019,
-      ),
-    ];
   }
-  void getCoversByTag(List<String> tags) {}
+  Future<void> chooseTag(String s) async {
+    covers = new List<Cover>();
 
-  void chooseTag(String s) {
-    print(s);
-    if (!choosedTag.contains(s)) choosedTag.add(s);
+    if (!choosedTag.contains(s)) {
+      choosedTag.add(s);
+    } else {
+      choosedTag.remove(s);
+    }
+    List<dynamic> dataList = await MongoData.getInstance()
+        .filterMovies(choosedTag, language, choosedYear);
+
+    for (int i = 0; i < dataList.length; i++) {
+      String url = await getPosterById(dataList[i]["imdb_id"]);
+      print(url);
+      covers.add(Cover(
+          image_url: url,
+          movie_name: dataList[i]["original_title"],
+          points: dataList[i]["vote_average"],
+          common: null,
+          year: null));
+      if (i == 30) break;
+    }
+
     notifyListeners();
   }
 
-  void chooseYear(int i) {
+  Future<void> chooseYear(int i) async {
     choosedYear = years[i];
+    covers = new List<Cover>();
+
+    List<dynamic> dataList = await MongoData.getInstance()
+        .filterMovies(choosedTag, language, choosedYear);
+
+    for (int i = 0; i < dataList.length; i++) {
+      String url = await getPosterById(dataList[i]["imdb_id"]);
+      print(url);
+      covers.add(Cover(
+          image_url: url,
+          movie_name: dataList[i]["original_title"],
+          points: dataList[i]["vote_average"],
+          common: null,
+          year: null));
+      if (i == 30) break;
+    }
+
     notifyListeners();
+  }
+
+  void setLanguage(String language) {
+    this.language = languageMap[language];
+    covers = new List<Cover>();
+    choosedTag = new List<String>();
   }
 }
