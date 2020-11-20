@@ -16,6 +16,7 @@ class InitProvider with ChangeNotifier {
 
   Future<List<Cover>> loadCover(List<dynamic> data) async {
     List<Cover> retVal = new List<Cover>();
+
     for (int i = 0; i < data.length; i++) {
       String url = await getPosterById(data[i]["imdb_id"]);
       print(url);

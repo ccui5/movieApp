@@ -15,136 +15,21 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-主要是 lib 文件夹， 其他不用管，
-下载安装教程
-https://flutter.dev/docs/get-started/install/windows
+Author: Chuanglin Cui, Yanchen Guo
 
-按照步骤创建一个 project, 将 lib 文件夹以及 pubspec.yaml 替换，就可以在安卓手机上运行
+how to use:
+open a simulator of ios or android
+use vscode run main file in lib
 
-可以运行之后打开 lib 文件夹 里面有一个 providers, 里面是前端要用的数据, 把数据存进这里前端会自动显示
+all code are in lib,
+mogodb connection and querys are in lib/data/mongo.dart
 
-data 文件夹里面是 mongodb class 未完成
+providers contains the data that needs to show in the front-end, providers will call the functions in the mongo.dart, load the data from database, and renew the front-end each time
 
-#Get the small set of movies by language which is English.
-db.movies_metadata.aggregate([
-{
-$match: {"original_language":"en"} 
-	},
-	{ $lookup:
-{
-from: "links_small",
-localField: "id",
-foreignField: "tmdbId",
-as: "small_links"
-}
-},
-{
-$match: { "small_links": { $ne: [] } }
-}
-])
+screens folder contains the wigits tree that display on the screens. the main screen is initScreen, this contains the current showing, top movies and top compaines' information and posters (5 querys).
 
-#Get the small set of movies by language which is English( #return is limited to 50).
-db.movies_metadata.aggregate([
-{
-$match: {"original_language":"en"} 
-	},
-	{ $lookup:
-{
-from: "links_small",
-localField: "id",
-foreignField: "tmdbId",
-as: "small_links"
-}
-},
-{
-$match: { "small_links": { $ne: [] } }
-},
-{
-\$limit: 50
-}
-])
+click language in the top of initScreen will go to tagScreen, users can find movies by click the tags and time, user can select multiple tags if needed, they can also cancle tags by click same buttom again(for example, people can click [action, Drama,...], once user click action again, this tag will be cancle in the tags)
 
-#Get the top20 movies by vote_average.
-db.movies_metadata.aggregate([
-{
-$sort: { "vote_average" : -1 }
-	},
-	{ 	$lookup:
-{
-from: "links_small",
-localField: "id",
-foreignField: "tmdbId",
-as: "small_links"
-}
-},
-{
-$match: { "small_links": { $ne: [] } }
-},
-{
-$limit: 20
-	},
-	{
-		$project: { \_id: 0, original_title : 1 , vote_average : 1 , poster_path : 1 }
-}
-])
+click contry info buttom in the initScreen will go to CountryInfoScreen, this shows the data of #movies, revenues and revenues/#movies data of each country(3 querys)
 
-#Get the top20 movies by revenue.
-db.movies_metadata.aggregate([
-{
-$sort: { "revenue" : -1 }
-	},
-	{ 	$lookup:
-{
-from: "links_small",
-localField: "id",
-foreignField: "tmdbId",
-as: "small_links"
-}
-},
-{
-$match: { "small_links": { $ne: [] } }
-},
-{
-$limit: 20
-	},
-	{
-		$project: { \_id: 0, original_title : 1 , revenue : 1 , poster_path : 1 }
-}
-])
-
-db.movies_metadata.aggregate([
-{"$unwind": '$production_companies'},
-{
-"$group": {
-"name": "$production_companies.name",
-"num_movies": {"$sum": 1},
-"revenue_total": {
-"$sum": {"$toLong": "$revenue"}
-}
-}
-},
-{
-"$sort": {"revenue_total": -1}
-},
-{"$limit": 20}
-])
-
-    db.movies_metadata.aggregate([
-    {
-    	$unwind: '$production_companies'
-    },{
-    	$group:
-    	{
-    		_id : {name:"$production_companies.name"},
-    		Num_movies: { $sum: 1 },
-    		revenue_total : { $sum: {$toLong : "$revenue"} }
-    	}
-    },
-    {
-    	$sort: { revenue_total : -1 }
-    },
-    {
-    	$limit: 20
-    }
-
-])
+click any poster of movies will go to movies detailScreen which shows the information of actors, keywords, dirctors, and average points of the movie

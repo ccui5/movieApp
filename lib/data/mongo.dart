@@ -111,7 +111,6 @@ class MongoData {
 //by average rate
   Future<List> getTopMovie() async {
     await db.open();
-
     List<dynamic> retVal = await movies_metadata.aggregateToStream([
       {
         "\$sort": {"vote_average": -1}

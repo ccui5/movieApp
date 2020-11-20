@@ -51,30 +51,6 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
     return retVal;
   }
 
-  List<Widget> showCommons(List<Common> commons) {
-    List<Widget> retVal = new List<Widget>();
-    for (int i = 0; i < commons.length; i++) {
-      retVal.add(
-        Container(
-          width: 350,
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: 100,
-                child: Text(commons[i].points),
-              ),
-              Container(
-                width: 250,
-                child: Text(commons[i].uid),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-    return retVal;
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
@@ -94,27 +70,27 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
                   ),
                 ),
                 Container(
-                  height: 180,
+                  height: 200,
                   child: Consumer<MovieProvider>(
                     builder: (context, u, child) => Column(
                       children: <Widget>[
                         Container(
-                          padding:
-                              EdgeInsets.only(top: 10, bottom: 5, left: 50),
-                          child: Text(u.m.movieName),
+                          width: 250,
+                          padding: EdgeInsets.only(top: 10, bottom: 5, left: 5),
+                          child: Center(child: Text(u.m.movieName)),
                         ),
                         Container(
-                          padding:
-                              EdgeInsets.only(top: 10, bottom: 5, left: 50),
+                          padding: EdgeInsets.only(top: 10, bottom: 5, left: 5),
                           child: Text(u.m.points.toString()),
                         ),
                         Container(
-                          padding:
-                              EdgeInsets.only(top: 10, bottom: 5, left: 50),
-                          child: Text("director: " + u.m.director),
+                          width: 250,
+                          padding: EdgeInsets.only(top: 10, bottom: 5, left: 5),
+                          child:
+                              Center(child: Text("director: " + u.m.director)),
                         ),
                         Container(
-                          padding: EdgeInsets.only(top: 5, bottom: 5, left: 50),
+                          padding: EdgeInsets.only(top: 5, bottom: 5, left: 5),
                           child: Text("language: " + u.m.language),
                         )
                       ],

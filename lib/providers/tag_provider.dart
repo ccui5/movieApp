@@ -67,6 +67,7 @@ class TagProvider with ChangeNotifier {
           common: null,
           year: null));
       if (i == 30) break;
+      notifyListeners();
     }
 
     notifyListeners();
@@ -89,6 +90,7 @@ class TagProvider with ChangeNotifier {
           common: null,
           year: null));
       if (i == 30) break;
+      notifyListeners();
     }
 
     notifyListeners();
